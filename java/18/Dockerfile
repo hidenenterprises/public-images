@@ -2,7 +2,7 @@ FROM        --platform=$TARGETOS/$TARGETARCH eclipse-temurin:18-jdk-jammy
 
 LABEL       author="Makai Marcell" maintainer="hello@makaimarcell.com"
 
-LABEL       org.opencontainers.image.source="https://github.com/ZentCloud/images"
+LABEL       org.opencontainers.image.source="https://github.com/hidencloud/images"
 LABEL       org.opencontainers.image.licenses=MIT
 
 RUN 		apt-get update -y \
