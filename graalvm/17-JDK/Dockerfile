@@ -9,8 +9,6 @@ ARG TARGETPLATFORM
 ARG GRAAL_VERSION=17.0.9
 ARG JAVA_VERSION=17
 
-MAINTAINER RikoDEV, <kontakt@riko.dev>
-
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Default to UTF-8 file.encoding

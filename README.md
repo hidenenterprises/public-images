@@ -48,3 +48,17 @@
 	* `ghcr.io/hidencloud/installers:alpine`
 * [`debian-install`](https://github.com/hidencloud/images/tree/master/installers/debian)
 	* `ghcr.io/hidencloud/installers:debian`
+
+## GraalVM
+
+| Java | Standard                               | JDK                                        	 |
+|------|----------------------------------------|----------------------------------------------|
+| 11   | `ghcr.io/hidencloud/images:graalvm_11` | ❌                                            |
+| 17   | `ghcr.io/hidencloud/images:graalvm_17` | `ghcr.io/hidencloud/images:graalvm_17-JDK`   |
+| 19   | `ghcr.io/hidencloud/images:graalvm_19` | ❌                                            |
+| 20   | ❌                                      | `ghcr.io/hidencloud/images:graalvm_20-JDK`   |
+| 21   | ❌                                      | `ghcr.io/hidencloud/images:graalvm_21-JDK`	  |
+| 22   | ❌                                  	   | `ghcr.io/hidencloud/images:graalvm_22-JDK`	  |
+| 23   | ❌                                 	    | `ghcr.io/hidencloud/images:graalvm_23-JDK`   | 
+| 24   | ❌                                  	   | `ghcr.io/hidencloud/images:graalvm_24-JDK`	  |
+
