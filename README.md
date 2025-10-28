@@ -10,11 +10,11 @@
 ## Games [AMD64]
 
 * [`rust`](https://github.com/hidencloud/images/tree/main/games/rust)
-	* `ghcr.io/pterodactyl/games:rust`
+	* `ghcr.io/hidencloud/games:rust`
 * [`source`](https://github.com/hidencloud/images/tree/main/games/source)
-	* `ghcr.io/pterodactyl/games:source`
+	* `ghcr.io/hidencloud/games:source`
 * [`Source with sourcemod`](https://github.com/hidencloud/images/tree/main/games/source-sourcemod)
-    * `ghcr.io/pterodactyl/games:source-sourcemod`
+    * `ghcr.io/hidencloud/games:source-sourcemod`
 
   Optionally installs and updates SourceMod/Metamod on each server startup. Requires adding egg environment variable `SOURCEMOD`.
 
