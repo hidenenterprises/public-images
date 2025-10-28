@@ -20,9 +20,9 @@ ENV         LANG=en_US.UTF-8
 ENV         LANGUAGE=en_US.UTF-8
 
 USER        container
-ENV         HOME /home/container
+ENV         HOME=/home/container
 WORKDIR     /home/container
 
 # Github workflow build context is ./games
-COPY        ./source-sourcemod/entrypoint.sh /entrypoint.sh
+COPY        ./entrypoint.sh ./entrypoint.sh
 CMD         [ "/bin/bash", "/entrypoint.sh" ]
