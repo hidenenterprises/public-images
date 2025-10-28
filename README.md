@@ -22,7 +22,6 @@
 
   Custom versions can be set with the use of `SM_VERSION` and `MM_VERSION` variables. Invalid versions will default to the latest stable version. Default path is set to csgo and can be overridden with `INSTALL_PATH` egg environment variable.
 
-
 ## GoLang [AMD64/ARM64]
 
 * [`go1.14`](https://github.com/hidencloud/images/tree/main/go/1.14)
@@ -163,6 +162,8 @@
     - `ghcr.io/hidencloud/images:java_22_liberica`
 
 ## Java OpenJ9 [AMD64/ARM64]
+
+``Java 16 OpenJ9`` does only work on AMD64.
 
 - [Java 8 OpenJ9](https://github.com/hidencloud/images/tree/main/java-openj9/8)
     - `ghcr.io/hidencloud/images:java_8_openj9`
