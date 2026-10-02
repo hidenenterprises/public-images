@@ -1,16 +1,16 @@
-# Seguridad
+# Security
 
-Si encuentras una vulnerabilidad o cualquier otro problema de seguridad en este repositorio o en un servicio de HIDENENTERPRISES, escribe a **security@hidenenterprises.com**.
+If you find a vulnerability or any other security issue in this repository or in a HIDENENTERPRISES service, email **security@hidenenterprises.com**.
 
-## Cómo reportarlo
+## How to report
 
-- Escribe solo a security@hidenenterprises.com. No abras issues, pull requests ni discusiones, y no lo comentes en Discord, Teams ni en ningún otro canal hasta que esté resuelto.
-- Explica qué has encontrado, dónde está (repositorio, rama, fichero, URL o servidor), cómo se reproduce y qué impacto crees que tiene.
-- Si lo que has encontrado es un secreto expuesto (contraseña, token, clave de API, certificado), di dónde está pero no lo copies en el correo.
-- No accedas a datos de clientes ni de terceros más allá de lo imprescindible para demostrar el problema, y no los modifiques ni los borres.
+- Email security@hidenenterprises.com only. Don't open issues, pull requests or discussions, and don't bring it up on Discord, Teams or any other channel until it's fixed.
+- Explain what you found, where it is (repository, branch, file, URL or server), how to reproduce it and what impact you think it has.
+- If you found an exposed secret (password, token, API key, certificate), say where it is but don't paste it into the email.
+- Don't access customer or third-party data beyond what you need to show the issue, and don't change or delete it.
 
-## Qué pasa después
+## What happens next
 
-Te responderemos para confirmar que lo hemos recibido, lo revisaremos y te avisaremos cuando esté corregido. Hasta entonces, mantenlo en privado.
+We'll reply to confirm we got your report, look into it and tell you when it's fixed. Until then, keep it private.
 
-El contenido de este repositorio es propiedad de HIDENENTERPRISES SL. Ver [LICENSE.md](LICENSE.md).
+The content of this repository is the property of HIDENENTERPRISES SL. See [LICENSE.md](LICENSE.md).
