@@ -1,0 +1,5 @@
+# Dueño del repo: GitHub le pide revisión automáticamente en cada PR, las de Dependabot incluidas.
+# Lo puso la automatización CODEOWNERS del Mac mini (~/Documents/AUTOMATIONS/GitHub_CODEOWNERS)
+# porque @joti-prime es quien hizo el primer commit (el repo lo creó un propietario de la org). Si el repo cambia de dueño, cambia esta línea. Se pueden añadir reglas por
+# carpeta debajo (gana la última que coincide). El dueño tiene que tener permiso de escritura.
+* @joti-prime
