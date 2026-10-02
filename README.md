@@ -1,208 +1,63 @@
-# HidenCloud Images
+# public-images
 
-## Base OSes [AMD64/ARM64]
+Imágenes Docker de ejecución e instalación que usan los servidores de HIDENCLOUD, publicadas en `ghcr.io/hidencloud`.
 
-* [`alpine`](https://github.com/hidencloud/images/tree/main/oses/alpine)
-	* `ghcr.io/hidencloud/images:alpine`
-* [`debian`](https://github.com/hidencloud/images/tree/main/oses/debian)
-	* `ghcr.io/hidencloud/images:debian`
+Son imágenes en el formato de Pterodactyl: las de ejecución corren como el usuario `container`, trabajan en `/home/container` y arrancan con un `entrypoint.sh` que expande la variable `STARTUP` del egg; las de `installers/` son los contenedores donde corren los scripts de instalación. Parten de imágenes de la comunidad de Pterodactyl (yolks y las colecciones de Software-Noob y Makai Marcell, como indican las etiquetas `author` de cada Dockerfile). HIDENCLOUD las ha reunido en un solo repo, publica los paquetes con su propio nombre en `ghcr.io/hidencloud`, ha añadido versiones (Java, Python, Node.js, GraalVM y la imagen de Source con SourceMod) y ha corregido paquetes y variables de entorno de la imagen base de Debian.
 
-## Games [AMD64]
+## Stack
 
-* [`rust`](https://github.com/hidencloud/images/tree/main/games/rust)
-	* `ghcr.io/hidencloud/games:rust`
-* [`source`](https://github.com/hidencloud/images/tree/main/games/source)
-	* `ghcr.io/hidencloud/games:source`
-* [`Source with sourcemod`](https://github.com/hidencloud/images/tree/main/games/source-sourcemod)
-    * `ghcr.io/hidencloud/games:source-sourcemod`
+- Dockerfiles multiarquitectura con Docker Buildx y QEMU
+- Bases: `debian`, `ubuntu`, `alpine`, `golang`, `eclipse-temurin`, `node`, `python`, `ibm-semeru-runtimes`, `shipilev/openjdk` y las imágenes oficiales de Corretto, Zulu, Liberica y Dragonwell
+- GitHub Actions para construir y publicar en GitHub Container Registry
 
-  Optionally installs and updates SourceMod/Metamod on each server startup. Requires adding egg environment variable `SOURCEMOD`.
+## Funcionamiento
 
-  ![image](https://user-images.githubusercontent.com/10975908/159126935-2e3f2883-3b89-4395-b28d-ab23dad0e5f8.png)
+### Catálogo
 
-  Custom versions can be set with the use of `SM_VERSION` and `MM_VERSION` variables. Invalid versions will default to the latest stable version. Default path is set to csgo and can be overridden with `INSTALL_PATH` egg environment variable.
+| Familia | Carpeta | Versiones | Etiqueta | Arquitecturas |
+|---|---|---|---|---|
+| Sistemas base | `oses/` | alpine, debian | `images:<so>` | amd64, arm64 |
+| Instalación | `installers/` | alpine, debian | `installers:<so>` | amd64, arm64 |
+| Juegos | `games/` | rust, source, source-sourcemod | `games:<juego>` | amd64 |
+| Go | `go/` | 1.14 a 1.17 | `images:go_<v>` | amd64, arm64 |
+| Java (Temurin) | `java/` | 8, 11, 16, 17, 18, 19, 21 | `images:java_<v>` | amd64, arm64 |
+| Java Corretto | `java-corretto/` | 8, 11, 17, 19, 20, 21 | `images:java_<v>_corretto` | amd64, arm64 |
+| Java Zulu | `java-zulu/` | 8, 11, 16, 17, 18, 19, 20, 21, 22 | `images:java_<v>_zulu` | amd64, arm64 |
+| Java Dragonwell | `java-dragonwell/` | 8, 11, 17, 21 | `images:java_<v>_dragonwell` | amd64, arm64 |
+| Java Liberica | `java-liberica/` | 8, 11, 17, 21, 22 | `images:java_<v>_liberica` | amd64, arm64 |
+| Java OpenJ9 | `java-openj9/` | 8, 11, 16, 17, 18, 20, 21 | `images:java_<v>_openj9` | amd64, arm64 (la 16 solo amd64) |
+| Java Shenandoah | `java-shenandoah/` | 8, 11, 17, 21 | `images:java_<v>_shenandoah` | amd64, arm64 |
+| GraalVM | `graalvm/` | 11, 17, 19; JDK: 17, 20, 21, 22, 23, 24 | `images:graalvm_<v>`, `images:graalvm_<v>-JDK` | amd64, arm64 |
+| Node.js | `nodejs/` | 12, 14, 16 a 22 | `images:nodejs_<v>` | amd64, arm64 |
+| Python | `python/` | 2.7, 3.6 a 3.12, 3.13-rc | `images:python_<v>` | amd64, arm64 |
 
-## GoLang [AMD64/ARM64]
+Todas las etiquetas cuelgan de `ghcr.io/hidencloud/`, por ejemplo `ghcr.io/hidencloud/images:java_21` o `ghcr.io/hidencloud/games:rust`. Las Java Shenandoah son las compilaciones experimentales de [builds.shipilev.net](https://builds.shipilev.net/); Azul, Corretto y Temurin ya traen Shenandoah GC desde Java 11.
 
-* [`go1.14`](https://github.com/hidencloud/images/tree/main/go/1.14)
-	* `ghcr.io/hidencloud/images:go_1.14`
-* [`go1.15`](https://github.com/hidencloud/images/tree/main/go/1.15)
-	* `ghcr.io/hidencloud/images:go_1.15`
-* [`go1.16`](https://github.com/hidencloud/images/tree/main/go/1.16)
-	* `ghcr.io/hidencloud/images:go_1.16`
-* [`go1.17`](https://github.com/hidencloud/images/tree/main/go/1.17)
-	* `ghcr.io/hidencloud/images:go_1.17`
+### Entrypoint de Java
 
-## Minecraft (Java) [AMD64/ARM64]
+El `java/entrypoint.sh` de las imágenes Temurin hace algo más que arrancar. Si encuentra un script de inicio de modpack (`start.sh`, `run.sh`, `ServerStart.sh`, `ServerInstall.sh` o `startserver.sh`), sustituye su `-Xmx` y el de los `user_jvm_args.txt` por `SERVER_MEMORY`, acepta la EULA y lo ejecuta. Si hay un instalador de Forge en la raíz lo ejecuta con `--installServer` y lo renombra a `*_installed.jar`, y hace lo mismo con los instaladores de FTB.
 
-* [`java8`](https://github.com/hidencloud/images/tree/main/java/8)
-	* `ghcr.io/hidencloud/images:java_8`
-* [`java11`](https://github.com/hidencloud/images/tree/main/java/11)
-	* `ghcr.io/hidencloud/images:java_11`
-* [`java16`](https://github.com/hidencloud/images/tree/main/java/16)
-	* `ghcr.io/hidencloud/images:java_16`
-* [`java17`](https://github.com/hidencloud/images/tree/main/java/17)
-	* `ghcr.io/hidencloud/images:java_17`
-* [`java18`](https://github.com/hidencloud/images/tree/main/java/18)
-	* `ghcr.io/hidencloud/images:java_18`
-* [`java19`](https://github.com/hidencloud/images/tree/main/java/19)
-	* `ghcr.io/hidencloud/images:java_19`
-* [`java21`](https://github.com/hidencloud/images/tree/main/java/21)
-	* `ghcr.io/hidencloud/images:java_21`
+### Source con SourceMod
 
-## Installation Images [AMD64/ARM64]
+`games:source-sourcemod` instala y actualiza SourceMod y Metamod en cada arranque si el egg define `SOURCEMOD`. `SM_VERSION` y `MM_VERSION` fijan versiones concretas (una versión no válida vuelve a la última estable) e `INSTALL_PATH` cambia la carpeta de instalación, que por defecto es `csgo`.
 
-* [`alpine-install`](https://github.com/hidencloud/images/tree/main/installers/alpine)
-	* `ghcr.io/hidencloud/installers:alpine`
-* [`debian-install`](https://github.com/hidencloud/images/tree/main/installers/debian)
-	* `ghcr.io/hidencloud/installers:debian`
+## Puesta en marcha
 
-## Node.js [AMD64/ARM64]
+En Go, Java (todas las distribuciones), GraalVM, Node.js y Python el contexto de build es la carpeta de la familia, porque el Dockerfile copia el `entrypoint.sh` que comparten; en `installers/` también es la carpeta de la familia, y en `oses/` y `games/` la de cada imagen:
 
-- [Nodejs 12](https://github.com/hidencloud/images/tree/main/nodejs/12)
-	- `ghcr.io/hidencloud/images:nodejs_12`
-- [Nodejs 14](https://github.com/hidencloud/images/tree/main/nodejs/14)
-	- `ghcr.io/hidencloud/images:nodejs_14`
-- [Nodejs 15](https://github.com/hidencloud/images/tree/main/nodejs/15)
-	- `ghcr.io/hidencloud/images:nodejs_15`
-- [Nodejs 16](https://github.com/hidencloud/images/tree/main/nodejs/16)
-	- `ghcr.io/hidencloud/images:nodejs_16`
-- [Nodejs 17](https://github.com/hidencloud/images/tree/main/nodejs/17)
-	- `ghcr.io/hidencloud/images:nodejs_17`
-- [Nodejs 18](https://github.com/hidencloud/images/tree/main/nodejs/18)
-	- `ghcr.io/hidencloud/images:nodejs_18`
-- [Nodejs 19](https://github.com/hidencloud/images/tree/main/nodejs/19)
-	- `ghcr.io/hidencloud/images:nodejs_19`
-- [Nodejs 20](https://github.com/hidencloud/images/tree/main/nodejs/20)
-	- `ghcr.io/hidencloud/images:nodejs_20`
-- [Nodejs 21](https://github.com/hidencloud/images/tree/main/nodejs/21)
-	- `ghcr.io/hidencloud/images:nodejs_21`
-- [Nodejs 22](https://github.com/hidencloud/images/tree/main/nodejs/22)
-	- `ghcr.io/hidencloud/images:nodejs_22`
+```bash
+docker buildx build --platform linux/amd64,linux/arm64 \
+  -f java/21/Dockerfile -t ghcr.io/hidencloud/images:java_21 java
+```
 
-## Python [AMD64/ARM64]
+## Despliegue
 
-- [Python 2.7](https://github.com/hidencloud/images/tree/main/python/2.7)
-	- `ghcr.io/hidencloud/images:python_2.7`
-- [Python 3.6](https://github.com/hidencloud/images/tree/main/python/3.6)
-	- `ghcr.io/hidencloud/images:python_3.6`
-- [Python 3.7](https://github.com/hidencloud/images/tree/main/python/3.7)
-	- `ghcr.io/hidencloud/images:python_3.7`
-- [Python 3.8](https://github.com/hidencloud/images/tree/main/python/3.8)
-	- `ghcr.io/hidencloud/images:python_3.8`
-- [Python 3.9](https://github.com/hidencloud/images/tree/main/python/3.9)
-	- `ghcr.io/hidencloud/images:python_3.9`
-- [Python 3.10](https://github.com/hidencloud/images/tree/main/python/3.10)
-	- `ghcr.io/hidencloud/images:python_3.10`
-- [Python 3.11](https://github.com/hidencloud/images/tree/main/python/3.11)
-	- `ghcr.io/hidencloud/images:python_3.11`
-- [Python 3.12](https://github.com/hidencloud/images/tree/main/python/3.12)
-	- `ghcr.io/hidencloud/images:python_3.12`
-- [Python 3.13-rc](https://github.com/hidencloud/images/tree/main/python/3.13-rc)
-	- `ghcr.io/hidencloud/images:python_3.13-rc`
+Hay un workflow por familia en `.github/workflows/` (`base.yml`, `installers.yml`, `games.yml`, `go.yml`, `java.yml`, `java-*.yml`, `graalvm.yml`, `nodejs.yml` y `python.yml`). Cada uno construye y publica sus imágenes cuando hay un push a `main` que toca su carpeta, el día 1 de cada mes y a mano desde Actions. Inician sesión en `ghcr.io` con el secreto `REGISTRY_TOKEN`.
 
-## Java Amazon Corretto [AMD64/ARM64]
+Para añadir una versión: crear la carpeta con su `Dockerfile` y añadir la etiqueta a la `matrix` del workflow de la familia. En Python, las versiones como `"3.10"` van entre comillas en la matriz o YAML las lee como `3.1`.
 
-- [Java 8 Amazon Corretto](https://github.com/hidencloud/images/tree/main/java-corretto/8)
-    - `ghcr.io/hidencloud/images:java_8_corretto`
-- [Java 11 Amazon Corretto](https://github.com/hidencloud/images/tree/main/java-corretto/11)
-    - `ghcr.io/hidencloud/images:java_11_corretto`
-- [Java 17 Amazon Corretto](https://github.com/hidencloud/images/tree/main/java-corretto/17)
-    - `ghcr.io/hidencloud/images:java_17_corretto`
-- [Java 19 Amazon Corretto](https://github.com/hidencloud/images/tree/main/java-corretto/19)
-    - `ghcr.io/hidencloud/images:java_19_corretto`
-- [Java 20 Amazon Corretto](https://github.com/hidencloud/images/tree/main/java-corretto/20)
-    - `ghcr.io/hidencloud/images:java_20_corretto`
-- [Java 21 Amazon Corretto](https://github.com/hidencloud/images/tree/main/java-corretto/21)
-    - `ghcr.io/hidencloud/images:java_21_corretto`
+## Licencia y seguridad
 
-## Java Azul Zulu [AMD64/ARM64]
+Repositorio público de HIDENENTERPRISES SL. Que se pueda ver no da derecho a usarlo: no se permite copiar, usar ni distribuir su contenido sin autorización por escrito. Ver [LICENSE.md](LICENSE.md).
 
-- [Java 8 Zulu](https://github.com/hidencloud/images/tree/main/java-zulu/8)
-    - `ghcr.io/hidencloud/images:java_8_zulu`
-- [Java 11 Zulu](https://github.com/hidencloud/images/tree/main/java-zulu/11)
-    - `ghcr.io/hidencloud/images:java_11_zulu`
-- [Java 16 Zulu](https://github.com/hidencloud/images/tree/main/java-zulu/16)
-    - `ghcr.io/hidencloud/images:java_16_zulu`
-- [Java 17 Zulu](https://github.com/hidencloud/images/tree/main/java-zulu/17)
-    - `ghcr.io/hidencloud/images:java_17_zulu`
-- [Java 18 Zulu](https://github.com/hidencloud/images/tree/main/java-zulu/18)
-    - `ghcr.io/hidencloud/images:java_18_zulu`
-- [Java 19 Zulu](https://github.com/hidencloud/images/tree/main/java-zulu/19)
-    - `ghcr.io/hidencloud/images:java_19_zulu`
-- [Java 20 Zulu](https://github.com/hidencloud/images/tree/main/java-zulu/20)
-    - `ghcr.io/hidencloud/images:java_20_zulu`
-- [Java 21 Zulu](https://github.com/hidencloud/images/tree/main/java-zulu/21)
-    - `ghcr.io/hidencloud/images:java_21_zulu`
-- [Java 22 Zulu](https://github.com/hidencloud/images/tree/main/java-zulu/22)
-    - `ghcr.io/hidencloud/images:java_22_zulu`
-
-## Java Dragonwell [AMD64/ARM64]
-
-- [Java 8 Dragonwell](https://github.com/hidencloud/images/tree/main/java-dragonwell/8)
-    - `ghcr.io/hidencloud/images:java_8_dragonwell`
-- [Java 11 Dragonwell](https://github.com/hidencloud/images/tree/main/java-dragonwell/11)
-    - `ghcr.io/hidencloud/images:java_11_dragonwell`
-- [Java 17 Dragonwell](https://github.com/hidencloud/images/tree/main/java-dragonwell/17)
-    - `ghcr.io/hidencloud/images:java_17_dragonwell`
-- [Java 21 Dragonwell](https://github.com/hidencloud/images/tree/main/java-dragonwell/21)
-    - `ghcr.io/hidencloud/images:java_21_dragonwell`
-
-## Java Liberica [AMD64/ARM64]
-
-- [Java 8 Liberica](https://github.com/hidencloud/images/tree/main/java-liberica/8)
-    - `ghcr.io/hidencloud/images:java_8_liberica`
-- [Java 11 Liberica](https://github.com/hidencloud/images/tree/main/java-liberica/11)
-    - `ghcr.io/hidencloud/images:java_11_liberica`
-- [Java 17 Liberica](https://github.com/hidencloud/images/tree/main/java-liberica/17)
-    - `ghcr.io/hidencloud/images:java_17_liberica`
-- [Java 21 Liberica](https://github.com/hidencloud/images/tree/main/java-liberica/21)
-    - `ghcr.io/hidencloud/images:java_21_liberica`
-- [Java 22 Liberica](https://github.com/hidencloud/images/tree/main/java-liberica/22)
-    - `ghcr.io/hidencloud/images:java_22_liberica`
-
-## Java OpenJ9 [AMD64/ARM64]
-
-``Java 16 OpenJ9`` does only work on AMD64.
-
-- [Java 8 OpenJ9](https://github.com/hidencloud/images/tree/main/java-openj9/8)
-    - `ghcr.io/hidencloud/images:java_8_openj9`
-- [Java 11 OpenJ9](https://github.com/hidencloud/images/tree/main/java-openj9/11)
-    - `ghcr.io/hidencloud/images:java_11_openj9`
-- [Java 16 OpenJ9](https://github.com/hidencloud/images/tree/main/java-openj9/16)
-    - `ghcr.io/hidencloud/images:java_16_openj9`
-- [Java 17 OpenJ9](https://github.com/hidencloud/images/tree/main/java-openj9/17)
-    - `ghcr.io/hidencloud/images:java_17_openj9`
-- [Java 18 OpenJ9](https://github.com/hidencloud/images/tree/main/java-openj9/18)
-    - `ghcr.io/hidencloud/images:java_18_openj9`
-- [Java 20 OpenJ9](https://github.com/hidencloud/images/tree/main/java-openj9/20)
-    - `ghcr.io/hidencloud/images:java_20_openj9`
-- [Java 21 OpenJ9](https://github.com/hidencloud/images/tree/main/java-openj9/21)
-    - `ghcr.io/hidencloud/images:java_21_openj9`
-
-## Java Shipilev Experimental [AMD64/ARM64]
-
-These are [shipilev experimental builds.](https://builds.shipilev.net/) If you're looking for Shenandoah GC, it is also by default shipped with at least Azul, Corretto and Temurin images starting with Java 11.
-
-- [Java 8 Shenandoah](https://github.com/hidencloud/images/tree/main/java-shenandoah/8)
-    - `ghcr.io/hidencloud/images:java_8_shenandoah`
-- [Java 11 Shenandoah](https://github.com/hidencloud/images/tree/main/java-shenandoah/11)
-    - `ghcr.io/hidencloud/images:java_11_shenandoah`
-- [Java 17 Shenandoah](https://github.com/hidencloud/images/tree/main/java-shenandoah/17)
-    - `ghcr.io/hidencloud/images:java_17_shenandoah`
-- [Java 21 Shenandoah](https://github.com/hidencloud/images/tree/main/java-shenandoah/21)
-    - `ghcr.io/hidencloud/images:java_21_shenandoah`
-
-## GraalVM [AMD64/ARM64]
-
-| Java | Standard                               | JDK                                        	 |
-|------|----------------------------------------|----------------------------------------------|
-| 11   | `ghcr.io/hidencloud/images:graalvm_11` | ❌                                            |
-| 17   | `ghcr.io/hidencloud/images:graalvm_17` | `ghcr.io/hidencloud/images:graalvm_17-JDK`   |
-| 19   | `ghcr.io/hidencloud/images:graalvm_19` | ❌                                            |
-| 20   | ❌                                      | `ghcr.io/hidencloud/images:graalvm_20-JDK`   |
-| 21   | ❌                                      | `ghcr.io/hidencloud/images:graalvm_21-JDK`	  |
-| 22   | ❌                                  	   | `ghcr.io/hidencloud/images:graalvm_22-JDK`	  |
-| 23   | ❌                                 	    | `ghcr.io/hidencloud/images:graalvm_23-JDK`   | 
-| 24   | ❌                                  	   | `ghcr.io/hidencloud/images:graalvm_24-JDK`	  |
-
+Para reportar una vulnerabilidad o cualquier problema de seguridad, escribe a [security@hidenenterprises.com](mailto:security@hidenenterprises.com). Más detalles en [SECURITY.md](SECURITY.md).
