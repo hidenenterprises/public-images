@@ -1,0 +1,40 @@
+name: build nginx-ptero
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 1 * *"
+  push:
+    branches:
+      - main
+    paths:
+      - nginx-ptero/**
+jobs:
+  push:
+    name: "images:nginx-ptero_${{ matrix.version }}"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        version:
+          - "8.4"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-qemu-action@v3
+        with:
+          image: tonistiigi/binfmt:qemu-v7.0.0-28
+      - uses: docker/setup-buildx-action@v3
+        with:
+          buildkitd-flags: --debug
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.REGISTRY_TOKEN }}
+      - uses: docker/build-push-action@v4
+        with:
+          context: ./nginx-ptero/${{ matrix.version }}
+          file: ./nginx-ptero/${{ matrix.version }}/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ghcr.io/hidencloud/images:nginx-ptero_${{ matrix.version }}

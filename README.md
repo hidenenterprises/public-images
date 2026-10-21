@@ -30,6 +30,7 @@ They're images in the Pterodactyl format: the runtime ones run as the `container
 | GraalVM | `graalvm/` | 11, 17, 19; JDK: 17, 20, 21, 22, 23, 24 | `images:graalvm_<v>`, `images:graalvm_<v>-JDK` | amd64, arm64 |
 | Node.js | `nodejs/` | 12, 14, 16 to 22 | `images:nodejs_<v>` | amd64, arm64 |
 | Python | `python/` | 2.7, 3.6 to 3.12, 3.13-rc | `images:python_<v>` | amd64, arm64 |
+| Web hosting (nginx + PHP-FPM) | `nginx-ptero/` | 8.4 | `images:nginx-ptero_<v>` | amd64, arm64 |
 
 All tags hang off `ghcr.io/hidencloud/`, for example `ghcr.io/hidencloud/images:java_21` or `ghcr.io/hidencloud/games:rust`. The Java Shenandoah images are the experimental builds from [builds.shipilev.net](https://builds.shipilev.net/); Azul, Corretto and Temurin already ship Shenandoah GC since Java 11.
 
@@ -43,7 +44,7 @@ The `java/entrypoint.sh` in the Temurin images does more than start the server. 
 
 ## Getting started
 
-For Go, Java (all distributions), GraalVM, Node.js and Python the build context is the family folder, because the Dockerfile copies the `entrypoint.sh` they share; for `installers/` it's also the family folder, and for `oses/` and `games/` it's each image's folder:
+For Go, Java (all distributions), GraalVM, Node.js and Python the build context is the family folder, because the Dockerfile copies the `entrypoint.sh` they share; for `installers/` it's also the family folder, and for `oses/`, `games/` and `nginx-ptero/` it's each image's folder:
 
 ```bash
 docker buildx build --platform linux/amd64,linux/arm64 \
@@ -52,7 +53,7 @@ docker buildx build --platform linux/amd64,linux/arm64 \
 
 ## Deployment
 
-There's one workflow per family in `.github/workflows/` (`base.yml`, `installers.yml`, `games.yml`, `go.yml`, `java.yml`, `java-*.yml`, `graalvm.yml`, `nodejs.yml` and `python.yml`). Each one builds and publishes its images when there's a push to `main` that touches its folder, on the 1st of every month, and by hand from Actions. They log in to `ghcr.io` with the `REGISTRY_TOKEN` secret.
+There's one workflow per family in `.github/workflows/` (`base.yml`, `installers.yml`, `games.yml`, `go.yml`, `java.yml`, `java-*.yml`, `graalvm.yml`, `nodejs.yml`, `python.yml` and `nginx-ptero.yml`). Each one builds and publishes its images when there's a push to `main` that touches its folder, on the 1st of every month, and by hand from Actions. They log in to `ghcr.io` with the `REGISTRY_TOKEN` secret.
 
 To add a version: create the folder with its `Dockerfile` and add the tag to the `matrix` of the family's workflow. In Python, versions like `"3.10"` go in quotes in the matrix or YAML reads them as `3.1`.
 
