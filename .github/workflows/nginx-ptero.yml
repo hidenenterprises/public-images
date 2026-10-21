@@ -8,9 +8,12 @@ on:
       - main
     paths:
       - nginx-ptero/**
+permissions:
+  contents: read
+  packages: write
 jobs:
   push:
-    name: "images:nginx-ptero_${{ matrix.version }}"
+    name: "nginx-ptero:${{ matrix.version }}"
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -28,8 +31,8 @@ jobs:
       - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3
         with:
           registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.REGISTRY_TOKEN }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - uses: docker/build-push-action@0a97817b6ade9f46837855d676c4cca3a2471fc9 # v4
         with:
           context: ./nginx-ptero/${{ matrix.version }}
@@ -37,4 +40,4 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            ghcr.io/hidencloud/images:nginx-ptero_${{ matrix.version }}
+            ghcr.io/hidenenterprises/nginx-ptero:${{ matrix.version }}

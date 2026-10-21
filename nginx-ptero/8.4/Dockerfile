@@ -3,7 +3,8 @@
 # CVE-2026-109618 and CVE-2026-109619. php84 comes from edge, which has the fixed 8.4.27.
 FROM alpine:3.22
 
-LABEL author="Sigma-Production" maintainer="HIDENCLOUD"
+LABEL author="Sigma-Production" maintainer="HIDENCLOUD" \
+      org.opencontainers.image.source="https://github.com/hidenenterprises/public-images"
 
 RUN echo "https://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories \
     && echo "https://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories
