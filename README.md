@@ -30,7 +30,7 @@ They're images in the Pterodactyl format: the runtime ones run as the `container
 | GraalVM | `graalvm/` | 11, 17, 19; JDK: 17, 20, 21, 22, 23, 24 | `images:graalvm_<v>`, `images:graalvm_<v>-JDK` | amd64, arm64 |
 | Node.js | `nodejs/` | 12, 14, 16 to 22 | `images:nodejs_<v>` | amd64, arm64 |
 | Python | `python/` | 2.7, 3.6 to 3.12, 3.13-rc | `images:python_<v>` | amd64, arm64 |
-| Web hosting (nginx + PHP-FPM) | `nginx-ptero/` | 8.4 | `ghcr.io/hidenenterprises/nginx-ptero:<v>` | amd64, arm64 |
+| Web hosting (nginx + PHP-FPM) | `nginx-ptero/` | 8.3, 8.4 | `ghcr.io/hidenenterprises/nginx-ptero:<v>` | amd64, arm64 |
 
 All tags hang off `ghcr.io/hidencloud/`, for example `ghcr.io/hidencloud/images:java_21` or `ghcr.io/hidencloud/games:rust`. The Java Shenandoah images are the experimental builds from [builds.shipilev.net](https://builds.shipilev.net/); Azul, Corretto and Temurin already ship Shenandoah GC since Java 11. The exception is `nginx-ptero`, which its workflow publishes to `ghcr.io/hidenenterprises/nginx-ptero` with the repository's `GITHUB_TOKEN` instead of `REGISTRY_TOKEN`.
 
