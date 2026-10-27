@@ -1,2 +1,5 @@
 .DS_Store
 .idea
+
+# Personal Claude Code settings: they keep approved commands as typed, credentials included
+.claude/settings.local.json
